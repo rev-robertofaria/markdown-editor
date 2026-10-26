@@ -2,7 +2,7 @@
 
 Leitor e editor de Markdown que roda inteiro num único `index.html`. Os arquivos são lidos direto do seu computador e o conteúdo deles nunca sai do navegador.
 
-**Usar online:** https://rev-robertofaria.github.io/markdown-md/
+**Usar online:** https://rev-robertofaria.github.io/markdown-editor/
 **Usar offline:** baixe o `index.html` e abra no Chrome/Edge (na primeira vez, precisa de internet para carregar as bibliotecas).
 
 ## Recursos

@@ -7,7 +7,7 @@ Leitor e editor de Markdown local em um único HTML, para as pastas de projeto e
 | Data | Decisão | Motivo |
 |---|---|---|
 | 26/10/2026 | Repositório próprio, público, com GitHub Pages | PWA exige HTTPS; Pages grátis só em repo público |
-| 26/10/2026 | Nome de exibição **Markdown.md** (pedido do Roberto); repo e URL `markdown-md` | Um ponto no nome do repo gera a URL `/markdown.md/`, que parece um arquivo e confunde links e o escopo da PWA |
+| 26/10/2026 | Nome de exibição **Markdown.md** (pedido do Roberto); repo e URL `markdown-editor` | Um ponto no nome do repo geraria a URL `/markdown.md/`, que parece um arquivo; `markdown-editor` escolhido pelo Roberto (disponível no GitHub) |
 | 26/10/2026 | Arquivo continua `index.html` | Um arquivo `.md` não é renderizado como página pelo navegador |
 | 26/10/2026 | Prefixo do localStorage `markdownmd.` | Consistência com o novo nome |
 
@@ -25,3 +25,4 @@ Testado em Chromium headless com o HTML original:
 ## Histórico
 - 26/10/2026 — Repositório preparado a partir de `leitor-md_1.html` (agora `index.html`), com README e `.nojekyll`.
 - 26/10/2026 — Renomeado para Markdown.md. Auditoria das propostas registrada acima.
+- 26/10/2026 — Repositório definido como `markdown-editor` (URL: rev-robertofaria.github.io/markdown-editor/).
