@@ -19,7 +19,7 @@ Testado em Chromium headless com o HTML original:
 - Descartado: suspeita de `$5 … $10` virar fórmula. A regex já impede isso.
 
 ## Backlog
-- v1.0: ~~PWA + abrir .md na mesma janela~~ ✓, ~~correção do nome duplicado~~ ✓, ~~wikilinks de arquivo aberto por duplo clique (quando dentro da pasta aberta)~~ ✓; falta: offline (bibliotecas dentro do repo), abas, pastas recentes.
+- v1.0: ~~PWA + abrir .md na mesma janela~~ ✓, ~~correção do nome duplicado~~ ✓, ~~wikilinks de arquivo aberto por duplo clique (quando dentro da pasta aberta)~~ ✓; ~~offline (bibliotecas dentro do repo)~~ ✓; falta: abas, pastas recentes.
 - v1.1: novo arquivo/renomear, busca no conteúdo, edição lado a lado.
 
 ## Histórico
@@ -29,3 +29,4 @@ Testado em Chromium headless com o HTML original:
 - 26/10/2026 — GitHub Pages ativo: https://rev-robertofaria.github.io/markdown-editor/
 - 26/10/2026 — Melhoria 1: PWA instalável (manifest, service worker, ícones), `file_handlers` para .md e `launch_handler: focus-existing` (abre na mesma janela). Arquivos com o mesmo nome viram "nome (2).md". Arquivo dentro da pasta aberta usa o caminho real. Testado em Chromium: manifesto sem erros, instalável, SW ativo, regras de nome e caminho OK. O duplo clique real no Windows só dá para testar no PC do Roberto.
 - 26/10/2026 — Roberto testou no Windows: instalação e "Abrir com" na mesma janela funcionando. Instalação noutro PC = abrir a URL no Chrome/Edge e clicar em Instalar (não há instalador para baixar).
+- 26/10/2026 — Melhoria 2: bibliotecas copiadas do npm (mesmas versões de antes) para `lib/`, com licenças em `lib/LICENSES/`. Service worker v2 guarda tudo na instalação (36 arquivos, ~4 MB). Mermaid só carrega quando há diagrama. Testado em Chromium: zero pedidos externos; com a rede desligada, código, fórmulas, diagrama e callout renderizam. Regras da melhoria 1 continuam OK.

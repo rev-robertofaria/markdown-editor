@@ -8,9 +8,9 @@
 <meta name="theme-color" content="#1f6feb">
 <link rel="icon" type="image/png" href="icons/favicon-64.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-<link id="hl-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-<link id="hl-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" disabled>
+<link rel="stylesheet" href="lib/katex/katex.min.css">
+<link id="hl-light" rel="stylesheet" href="lib/hljs/github.min.css">
+<link id="hl-dark" rel="stylesheet" href="lib/hljs/github-dark.min.css" disabled>
 <style>
 :root{
   --bg:#fbfaf8;--panel:#f3f1ec;--text:#1f2328;--muted:#656d76;--line:#dcd8cf;
@@ -224,11 +224,11 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
 <input type="file" id="fileInput" multiple accept=".md,.markdown,.mdown,.mkd,.txt" hidden>
 <input type="file" id="dirInput" webkitdirectory multiple hidden>
 
-<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<!-- bibliotecas guardadas no próprio site (lib/): funcionam sem internet depois da 1ª visita -->
+<script src="lib/marked.min.js"></script>
+<script src="lib/purify.min.js"></script>
+<script src="lib/hljs/highlight.min.js"></script>
+<script src="lib/katex/katex.min.js"></script>
 <script>
 "use strict";
 const $ = s => document.querySelector(s);
@@ -415,6 +415,15 @@ $('#filter').addEventListener('input', renderList);
 $('#filter').addEventListener('keydown', e=>{ if(e.key==='Enter'){ const b=$('#list .file'); if(b) b.click(); } });
 
 /* ---------- abrir e renderizar ---------- */
+// mermaid (~3 MB) só é carregado quando algum arquivo tem diagrama
+let mermaidP=null;
+function loadMermaid(){
+  if(window.mermaid) return Promise.resolve();
+  return mermaidP ||= new Promise(res=>{
+    const s=document.createElement('script'); s.src='lib/mermaid.min.js';
+    s.onload=res; s.onerror=()=>{ mermaidP=null; res(); }; document.head.append(s);
+  });
+}
 async function openPath(p, keepScroll=false){
   const src=state.files.get(p); if(!src) return;
   let f; try{ f=await getFile(src); }catch(e){ toast('Não consegui ler: '+p); return; }
@@ -489,7 +498,7 @@ function renderFrontMatter(raw){
 async function renderMarkdown(src, path){
   const art=$('#article');
   if(!window.marked || !window.DOMPurify){
-    art.innerHTML=`<p><b>As bibliotecas não carregaram.</b> Este leitor precisa de internet para buscar os componentes de renderização. Verifique a conexão e recarregue (F5).</p><pre>${esc(src)}</pre>`;
+    art.innerHTML=`<p><b>As bibliotecas não carregaram.</b> Na primeira visita é preciso internet para guardar os componentes no computador. Verifique a conexão e recarregue (F5).</p><pre>${esc(src)}</pre>`;
     return;
   }
   src=src.replace(/^﻿/,'').replace(/\r\n?/g,'\n');
@@ -571,6 +580,7 @@ async function enhance(art, path){
 
   // mermaid
   const mm=[...art.querySelectorAll('pre > code.language-mermaid')];
+  if(mm.length) await loadMermaid();
   if(mm.length && window.mermaid){
     const nodes=mm.map(c=>{ const d=document.createElement('div'); d.className='mermaid'; d.textContent=c.textContent; c.parentElement.replaceWith(d); return d; });
     try{ mermaid.initialize({startOnLoad:false, securityLevel:'strict', theme:isDark()?'dark':'default'}); await mermaid.run({nodes}); }catch(e){ console.warn(e); }
@@ -791,7 +801,7 @@ $('#article').innerHTML = `
 </div>`;
 $('#wFolder').onclick=openFolder;
 $('#wFiles').onclick=openFiles;
-if(!window.marked) toast('Sem internet: as bibliotecas de renderização não carregaram.');
+if(!window.marked) toast('As bibliotecas de renderização não carregaram. Recarregue com internet uma vez.');
 
 /* ---------- app instalado: abrir .md pelo Windows (duplo clique / "Abrir com") ---------- */
 // Com launch_handler "focus-existing", cada arquivo chega a esta mesma janela e entra na lista.

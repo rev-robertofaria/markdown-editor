@@ -3,7 +3,7 @@
 Leitor e editor de Markdown que roda inteiro num único `index.html`. Os arquivos são lidos direto do seu computador e o conteúdo deles nunca sai do navegador.
 
 **Usar online:** https://rev-robertofaria.github.io/markdown-editor/
-**Usar offline:** baixe o `index.html` e abra no Chrome/Edge (na primeira vez, precisa de internet para carregar as bibliotecas).
+**Sem internet:** depois da primeira visita, o app instalado funciona offline.
 
 ## Instalar como app (recomendado)
 1. Abra o site no **Chrome** ou no **Edge** e clique em **⤓ Instalar** (ou no ícone de instalar na barra de endereço).
@@ -32,5 +32,11 @@ Leitor e editor de Markdown que roda inteiro num único `index.html`. Os arquivo
 
 ## Privacidade
 - O conteúdo dos arquivos abertos fica no navegador e não é enviado a servidor nenhum.
-- Hoje a página baixa as bibliotecas (marked, DOMPurify, highlight.js, KaTeX, Mermaid) de `cdn.jsdelivr.net` e `cdnjs.cloudflare.com`, com versão fixa.
+- As bibliotecas (marked, DOMPurify, highlight.js, KaTeX, Mermaid) estão dentro do repositório, em `lib/`. A página não chama nenhuma CDN.
 - Imagens com URL externa (`https://...`) dentro de um `.md` são carregadas do site de origem.
+
+## Sem internet
+Depois da primeira visita com internet, o app funciona offline: o service worker guarda a página e as bibliotecas no computador.
+
+## Licenças de terceiros
+Ver `lib/LICENSES/` (marked e KaTeX: MIT; Mermaid: MIT; DOMPurify: Apache-2.0 / MPL-2.0; highlight.js: BSD-3-Clause).
