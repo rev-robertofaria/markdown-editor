@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Markdown.md</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1f6feb">
+<link rel="icon" type="image/png" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <link id="hl-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <link id="hl-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" disabled>
@@ -186,6 +190,7 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
   <button class="btn icon hide-sm" id="bFont" title="Alternar fonte serifada / sem serifa">Aa</button>
   <button class="btn icon" id="bTheme" title="Tema claro/escuro">◐</button>
   <button class="btn icon hide-sm" id="bPrint" title="Imprimir / salvar PDF (Ctrl+P)">⎙</button>
+  <button class="btn primary" id="bInstall" title="Instalar como app: abre arquivos .md com duplo clique" hidden>⤓ Instalar</button>
 </header>
 
 <div class="layout">
@@ -258,6 +263,21 @@ function addEntry(path, src){
   if(MD_EXT.test(path)) state.files.set(path, src);
   else if(IMG_EXT.test(path)) state.assets.set(path, src);
 }
+// arquivo solto (fora de pasta): mesmo nome de outro arquivo vira "nome (2).md" em vez de substituir
+async function sameSource(a, b){
+  if(a.handle && b.handle){ try{ return await a.handle.isSameEntry(b.handle); }catch{ return false; } }
+  const fa=a.file, fb=b.file;
+  // sem handle não há como saber se é o mesmo arquivo: igual só se tamanho, data e conteúdo coincidem
+  if(!(fa && fb && fa.size===fb.size && fa.lastModified===fb.lastModified)) return false;
+  try{ return (await fa.text())===(await fb.text()); }catch{ return false; }
+}
+async function addLoose(name, src){
+  let key=norm(name), n=1;
+  const stem=key.replace(MD_EXT,''), ext=(key.match(MD_EXT)||[''])[0];
+  while(state.files.has(key) && !(await sameSource(state.files.get(key), src))) key=`${stem} (${++n})${ext}`;
+  addEntry(key, src);
+  return key;
+}
 async function getFile(src){ return src.handle ? await src.handle.getFile() : src.file; }
 async function walkHandle(dir, prefix){
   for await (const [name, h] of dir.entries()){
@@ -310,8 +330,9 @@ async function openFiles(){
   if(window.showOpenFilePicker && !state.noFSA){
     try{
       const hs = await showOpenFilePicker({multiple:true, types:[{description:'Markdown', accept:{'text/plain':['.md','.markdown','.mdown','.mkd','.txt']}}]});
-      for(const h of hs) addEntry(h.name,{handle:h});
-      await afterLoad(hs[0] && hs[0].name);
+      let first=null;
+      for(const h of hs){ const k=await addLoose(h.name,{handle:h}); first=first||k; }
+      await afterLoad(first);
     }catch(e){
       if(e.name==='AbortError') return;
       console.warn(e); state.noFSA=true;
@@ -320,8 +341,9 @@ async function openFiles(){
   } else $('#fileInput').click();
 }
 $('#fileInput').addEventListener('change', async e=>{
-  const fs=[...e.target.files]; for(const f of fs) addEntry(f.name,{file:f});
-  e.target.value=''; if(fs.length) await afterLoad(fs[0].name);
+  const fs=[...e.target.files]; let first=null;
+  for(const f of fs){ const k=await addLoose(f.name,{file:f}); first=first||k; }
+  e.target.value=''; if(fs.length) await afterLoad(first);
 });
 $('#dirInput').addEventListener('change', async e=>{
   const fs=[...e.target.files]; if(!fs.length) return;
@@ -355,7 +377,7 @@ document.addEventListener('drop', async e=>{
     if(dirs.length) resetLib(dirs.length===1 ? dirs[0].name : 'Várias pastas', dirs.length===1 ? dirs[0] : null);
     for(const h of hs){
       if(h.kind==='directory') await walkHandle(h, dirs.length>1 ? h.name+'/' : '');
-      else { addEntry(h.name,{handle:h}); first=first||h.name; }
+      else { const k=await addLoose(h.name,{handle:h}); first=first||k; }
     }
   }catch{
     if(en.length && en.every(Boolean)){
@@ -365,7 +387,7 @@ document.addEventListener('drop', async e=>{
         if(x.isDirectory && dirs.length===1){ for(const k of await readAll(x.createReader())) await walkEntry(k,''); }
         else { await walkEntry(x,''); if(x.isFile) first=first||x.name; }
       }
-    } else { for(const f of fl){ addEntry(f.name,{file:f}); first=first||f.name; } }
+    } else { for(const f of fl){ const k=await addLoose(f.name,{file:f}); first=first||k; } }
   }
   await afterLoad(first);
 });
@@ -763,12 +785,44 @@ $('#article').innerHTML = `
     <li>Fórmulas KaTeX (<code>$…$</code>) e diagramas Mermaid</li>
     <li><b>✎ Editar</b> e guardar no próprio arquivo (Chrome/Edge, abrindo pelos botões)</li>
     <li>Atualiza sozinho quando o arquivo é salvo por outro programa (Chrome/Edge)</li>
+    <li><b>⤓ Instalar</b> como app (Chrome/Edge): depois, no Explorer, <i>Abrir com → Markdown.md</i> abre o arquivo nesta mesma janela</li>
     <li>Atalhos: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> pasta · <kbd>Ctrl</kbd>+<kbd>O</kbd> arquivos · <kbd>Ctrl</kbd>+<kbd>K</kbd> filtrar · <kbd>Ctrl</kbd>+<kbd>B</kbd> lista · <kbd>Ctrl</kbd>+<kbd>E</kbd> editar · <kbd>Ctrl</kbd>+<kbd>S</kbd> guardar · <kbd>Ctrl</kbd>+<kbd>P</kbd> PDF</li>
   </ul>
 </div>`;
 $('#wFolder').onclick=openFolder;
 $('#wFiles').onclick=openFiles;
 if(!window.marked) toast('Sem internet: as bibliotecas de renderização não carregaram.');
+
+/* ---------- app instalado: abrir .md pelo Windows (duplo clique / "Abrir com") ---------- */
+// Com launch_handler "focus-existing", cada arquivo chega a esta mesma janela e entra na lista.
+async function openLaunched(handles){
+  let first=null;
+  for(const h of handles){
+    if(h.kind!=='file' || !MD_EXT.test(h.name)) continue;
+    let key=null;
+    // se o arquivo estiver dentro da pasta aberta, usa o caminho real (links [[wiki]] e imagens funcionam)
+    if(state.rootHandle){ try{ const parts=await state.rootHandle.resolve(h); if(parts && parts.length){ key=norm(parts.join('/')); addEntry(key,{handle:h}); } }catch{} }
+    if(!key) key=await addLoose(h.name,{handle:h});
+    first=first||key;
+  }
+  if(!first) return;
+  renderList();
+  if(isDirty()){ toast('Arquivo adicionado à lista. Guarde ou descarte a edição atual para abri-lo.'); return; }
+  if(state.editing) exitEdit();
+  await openPath(first);
+}
+if('launchQueue' in window){
+  launchQueue.setConsumer(p=>{ if(p.files && p.files.length) openLaunched(p.files); });
+}
+
+/* instalação como app */
+let installEvt=null;
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); installEvt=e; $('#bInstall').hidden=false; });
+window.addEventListener('appinstalled', ()=>{ installEvt=null; $('#bInstall').hidden=true; toast('Instalado ✓ Agora pode abrir arquivos .md com "Abrir com → Markdown.md".'); });
+$('#bInstall').onclick=async()=>{ if(!installEvt) return; installEvt.prompt(); await installEvt.userChoice; installEvt=null; $('#bInstall').hidden=true; };
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  navigator.serviceWorker.register('sw.js').catch(e=>console.warn('SW:',e));
+}
 </script>
 </body>
 </html>

@@ -19,10 +19,12 @@ Testado em Chromium headless com o HTML original:
 - Descartado: suspeita de `$5 … $10` virar fórmula. A regex já impede isso.
 
 ## Backlog
-- v1.0: PWA + abrir .md na mesma janela, offline (bibliotecas dentro do repo), abas, pastas recentes, correção do nome duplicado, resolver wikilinks de arquivo aberto por duplo clique.
+- v1.0: ~~PWA + abrir .md na mesma janela~~ ✓, ~~correção do nome duplicado~~ ✓, ~~wikilinks de arquivo aberto por duplo clique (quando dentro da pasta aberta)~~ ✓; falta: offline (bibliotecas dentro do repo), abas, pastas recentes.
 - v1.1: novo arquivo/renomear, busca no conteúdo, edição lado a lado.
 
 ## Histórico
 - 26/10/2026 — Repositório preparado a partir de `leitor-md_1.html` (agora `index.html`), com README e `.nojekyll`.
 - 26/10/2026 — Renomeado para Markdown.md. Auditoria das propostas registrada acima.
 - 26/10/2026 — Repositório definido como `markdown-editor` (URL: rev-robertofaria.github.io/markdown-editor/).
+- 26/10/2026 — GitHub Pages ativo: https://rev-robertofaria.github.io/markdown-editor/
+- 26/10/2026 — Melhoria 1: PWA instalável (manifest, service worker, ícones), `file_handlers` para .md e `launch_handler: focus-existing` (abre na mesma janela). Arquivos com o mesmo nome viram "nome (2).md". Arquivo dentro da pasta aberta usa o caminho real. Testado em Chromium: manifesto sem erros, instalável, SW ativo, regras de nome e caminho OK. O duplo clique real no Windows só dá para testar no PC do Roberto.

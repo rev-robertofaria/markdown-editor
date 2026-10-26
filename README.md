@@ -5,6 +5,12 @@ Leitor e editor de Markdown que roda inteiro num único `index.html`. Os arquivo
 **Usar online:** https://rev-robertofaria.github.io/markdown-editor/
 **Usar offline:** baixe o `index.html` e abra no Chrome/Edge (na primeira vez, precisa de internet para carregar as bibliotecas).
 
+## Instalar como app (recomendado)
+1. Abra o site no **Chrome** ou no **Edge** e clique em **⤓ Instalar** (ou no ícone de instalar na barra de endereço).
+2. No Explorer, botão direito num `.md` → **Abrir com** → **Markdown.md** (marque "Sempre usar este app" se quiser).
+3. Cada `.md` aberto assim entra na **mesma janela**, na lista lateral; não é preciso fechar e abrir de novo.
+4. Se o arquivo estiver dentro da pasta já aberta (ex.: Zikaron), ele usa o caminho real e os `[[links]]` e imagens funcionam.
+
 ## Recursos
 - Abrir pasta inteira (ex.: vault "Zikaron" do Obsidian) ou arquivos soltos; arrastar e soltar
 - Tabelas, tarefas, notas de rodapé, realce de código, KaTeX, Mermaid
