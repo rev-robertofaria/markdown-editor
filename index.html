@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leitor MD</title>
+<title>Markdown.md</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <link id="hl-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <link id="hl-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" disabled>
@@ -244,8 +244,8 @@ const safeDecode = s => { try{ return decodeURIComponent(s); }catch{ return s; }
 const narrow = () => matchMedia('(max-width:820px)').matches;
 let toastT;
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3600); }
-const pref = { get(k,d){ try{ const v=localStorage.getItem('leitormd.'+k); return v===null?d:v; }catch{ return d; } },
-               set(k,v){ try{ localStorage.setItem('leitormd.'+k,v); }catch{} } };
+const pref = { get(k,d){ try{ const v=localStorage.getItem('markdownmd.'+k); return v===null?d:v; }catch{ return d; } },
+               set(k,v){ try{ localStorage.setItem('markdownmd.'+k,v); }catch{} } };
 
 /* ---------- biblioteca de arquivos ---------- */
 function resetLib(name, rootHandle){
@@ -401,7 +401,7 @@ async function openPath(p, keepScroll=false){
   state.current=p; state.lastMod=f.lastModified;
   await renderMarkdown(text, p);
   const words=(text.match(/[\p{L}\p{N}]+/gu)||[]).length;
-  document.title = base(p).replace(MD_EXT,'')+' — Leitor MD';
+  document.title = base(p).replace(MD_EXT,'')+' — Markdown.md';
   $('#docpath').innerHTML = `${esc(state.rootName?state.rootName+' › ':'')}${esc(dirOf(p)?dirOf(p).replace(/\//g,' › ')+' › ':'')}<b>${esc(base(p))}</b> · ${words.toLocaleString('pt-BR')} palavras · ~${Math.max(1,Math.round(words/200))} min`;
   $('#bEdit').hidden=false;
   main.style.scrollBehavior='auto'; main.scrollTop = keepScroll ? y : 0; main.style.scrollBehavior='';
@@ -750,8 +750,8 @@ document.addEventListener('keydown', e=>{
 /* ---------- tela inicial ---------- */
 $('#article').innerHTML = `
 <div class="welcome">
-  <h1>Leitor MD</h1>
-  <p class="lead">Leitura confortável de arquivos Markdown, direto no seu computador. Nada é enviado para a internet.</p>
+  <h1>Markdown.md</h1>
+  <p class="lead">Leitor e editor de arquivos Markdown, direto no seu computador. O conteúdo dos arquivos nunca sai do navegador.</p>
   <div class="actions">
     <button class="btn primary" id="wFolder">📁 Abrir pasta</button>
     <button class="btn" id="wFiles">📄 Abrir arquivos</button>

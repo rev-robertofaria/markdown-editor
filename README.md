@@ -1,8 +1,8 @@
-# Leitor MD
+# Markdown.md
 
-Leitor e editor de Markdown que roda inteiro num único `index.html`. Os arquivos são lidos direto do seu computador e nada é enviado para a internet.
+Leitor e editor de Markdown que roda inteiro num único `index.html`. Os arquivos são lidos direto do seu computador e o conteúdo deles nunca sai do navegador.
 
-**Usar online:** https://rev-robertofaria.github.io/leitor-md/
+**Usar online:** https://rev-robertofaria.github.io/markdown-md/
 **Usar offline:** baixe o `index.html` e abra no Chrome/Edge (na primeira vez, precisa de internet para carregar as bibliotecas).
 
 ## Recursos
@@ -25,5 +25,6 @@ Leitor e editor de Markdown que roda inteiro num único `index.html`. Os arquivo
 | Ctrl+P | Imprimir / PDF |
 
 ## Privacidade
-O site no GitHub Pages só serve o HTML. Os arquivos abertos ficam no navegador e não são enviados para servidor nenhum.
-As bibliotecas (marked, DOMPurify, highlight.js, KaTeX, Mermaid) vêm de CDN com versão fixa.
+- O conteúdo dos arquivos abertos fica no navegador e não é enviado a servidor nenhum.
+- Hoje a página baixa as bibliotecas (marked, DOMPurify, highlight.js, KaTeX, Mermaid) de `cdn.jsdelivr.net` e `cdnjs.cloudflare.com`, com versão fixa.
+- Imagens com URL externa (`https://...`) dentro de um `.md` são carregadas do site de origem.
