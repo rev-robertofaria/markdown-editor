@@ -28,3 +28,4 @@ Testado em Chromium headless com o HTML original:
 - 26/10/2026 — Repositório definido como `markdown-editor` (URL: rev-robertofaria.github.io/markdown-editor/).
 - 26/10/2026 — GitHub Pages ativo: https://rev-robertofaria.github.io/markdown-editor/
 - 26/10/2026 — Melhoria 1: PWA instalável (manifest, service worker, ícones), `file_handlers` para .md e `launch_handler: focus-existing` (abre na mesma janela). Arquivos com o mesmo nome viram "nome (2).md". Arquivo dentro da pasta aberta usa o caminho real. Testado em Chromium: manifesto sem erros, instalável, SW ativo, regras de nome e caminho OK. O duplo clique real no Windows só dá para testar no PC do Roberto.
+- 26/10/2026 — Roberto testou no Windows: instalação e "Abrir com" na mesma janela funcionando. Instalação noutro PC = abrir a URL no Chrome/Edge e clicar em Instalar (não há instalador para baixar).
