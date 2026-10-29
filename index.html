@@ -45,6 +45,7 @@ button,input,textarea{font:inherit;color:inherit}
 /* barra superior */
 header{display:flex;gap:6px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel);min-width:0}
 .btn{border:1px solid var(--line);background:var(--bg);border-radius:7px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+a.btn{text-decoration:none;color:inherit;display:inline-flex;align-items:center}
 .btn:hover{border-color:var(--accent)}
 .btn.icon{padding:5px 9px}
 .primary{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -105,7 +106,8 @@ article img{max-width:100%;height:auto;border-radius:6px}
 .missing{display:inline-block;padding:4px 8px;border:1px dashed var(--c-red);border-radius:6px;color:var(--c-red);font-size:.85em}
 article code{font-family:Consolas,"Cascadia Code",ui-monospace,monospace;font-size:.88em;background:var(--code-bg);padding:.12em .38em;border-radius:5px}
 .codewrap{position:relative}
-article pre{background:var(--code-bg);padding:14px 16px;border-radius:8px;overflow:auto;line-height:1.5;border:1px solid var(--line)}
+article pre{background:var(--code-bg);padding:14px 16px;border-radius:8px;overflow:auto;line-height:1.5;border:1px solid var(--line);white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
+article pre code,article pre code.hljs{white-space:inherit;word-break:inherit;overflow-wrap:inherit}
 article pre code{background:none;padding:0;font-size:.86em}
 article pre code.hljs{background:none;padding:0}
 .copy{position:absolute;top:8px;right:8px;font-size:12px;opacity:0;transition:opacity .15s}
@@ -190,6 +192,7 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
   <button class="btn icon hide-sm" id="bFont" title="Alternar fonte serifada / sem serifa">Aa</button>
   <button class="btn icon" id="bTheme" title="Tema claro/escuro">◐</button>
   <button class="btn icon hide-sm" id="bPrint" title="Imprimir / salvar PDF (Ctrl+P)">⎙</button>
+  <a class="btn hide-sm" id="bDownload" href="markdown-md.html" download="Markdown.md.html" title="Baixar como um único ficheiro HTML: abre direto no navegador, sem instalar">⬇ Baixar HTML</a>
   <button class="btn primary" id="bInstall" title="Instalar como app: abre arquivos .md com duplo clique" hidden>⤓ Instalar</button>
 </header>
 
@@ -824,6 +827,9 @@ async function openLaunched(handles){
 if('launchQueue' in window){
   launchQueue.setConsumer(p=>{ if(p.files && p.files.length) openLaunched(p.files); });
 }
+
+/* baixar HTML: só faz sentido no site */
+if(window.MDMD_STANDALONE || location.protocol==='file:') $('#bDownload').hidden=true;
 
 /* instalação como app */
 let installEvt=null;

@@ -11,6 +11,11 @@ Leitor e editor de Markdown que roda inteiro num único `index.html`. Os arquivo
 3. Cada `.md` aberto assim entra na **mesma janela**, na lista lateral; não é preciso fechar e abrir de novo.
 4. Se o arquivo estiver dentro da pasta já aberta (ex.: Zikaron), ele usa o caminho real e os `[[links]]` e imagens funcionam.
 
+## Baixar como um único ficheiro HTML (sem instalar)
+No site, botão **⬇ Baixar HTML** (ou direto: https://rev-robertofaria.github.io/markdown-editor/markdown-md.html).
+Gera `Markdown.md.html` (~5 MB) com todas as bibliotecas dentro: abre com duplo clique, funciona sem internet, não precisa de instalar.
+Para regenerar depois de mudar `index.html` ou `lib/`: `node build-standalone.mjs`.
+
 ## Recursos
 - Abrir pasta inteira (ex.: vault "Zikaron" do Obsidian) ou arquivos soltos; arrastar e soltar
 - Tabelas, tarefas, notas de rodapé, realce de código, KaTeX, Mermaid

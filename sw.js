@@ -3,7 +3,7 @@
 // - Página e manifesto: rede primeiro (versão nova sempre que houver internet), cache como reserva.
 // - lib/ e icons/: cache primeiro (arquivos com versão fixa; mudam só junto com CACHE).
 // Ao mudar qualquer arquivo de lib/, suba o número de CACHE.
-const CACHE = 'markdown-md-v4';
+const CACHE = 'markdown-md-v5';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-192.png', 'icons/maskable-512.png', 'icons/favicon-64.png'];
 const LIBS = [
