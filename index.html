@@ -115,7 +115,7 @@ article blockquote{margin:1em 0;padding:.2em 1em;border-left:4px solid var(--lin
 article table{border-collapse:collapse;font-size:.93em}
 article th,article td{border:1px solid var(--line);padding:6px 11px;vertical-align:top}
 article th{background:var(--panel)}
-article tr:nth-child(2n) td{background:color-mix(in srgb,var(--panel) 45%,transparent)}
+article tr:nth-child(2n) td{background:rgba(127,127,127,.07);background:color-mix(in srgb,var(--panel) 45%,transparent)}
 article hr{border:0;border-top:1px solid var(--line);margin:2em 0}
 article li > input[type=checkbox]{margin-right:.45em}
 article ul:has(> li > input[type=checkbox]){list-style:none;padding-left:1.1em}
@@ -127,7 +127,7 @@ article ul:has(> li > input[type=checkbox]){list-style:none;padding-left:1.1em}
 .katex-display{overflow-x:auto;overflow-y:hidden;padding:.3em 0}
 
 /* callouts */
-.callout{border-left:4px solid var(--cc);background:color-mix(in srgb,var(--cc) 9%,transparent);color:var(--text)!important;border-radius:0 8px 8px 0;padding:.6em 1em!important}
+.callout{border-left:4px solid var(--cc);background:rgba(127,127,127,.08);background:color-mix(in srgb,var(--cc) 9%,transparent);color:var(--text)!important;border-radius:0 8px 8px 0;padding:.6em 1em!important}
 .callout-title{font-weight:700;color:var(--cc);margin-bottom:.25em;font-family:"Segoe UI",system-ui,sans-serif}
 .callout > p:last-child{margin-bottom:.3em}
 .cc-blue{--cc:var(--c-blue)}.cc-green{--cc:var(--c-green)}.cc-purple{--cc:var(--c-purple)}
@@ -149,7 +149,7 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
 .welcome ul{padding-left:1.2em;color:var(--muted)}
 .welcome kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;font-size:.85em;background:var(--panel)}
 
-#drop{position:fixed;inset:0;background:color-mix(in srgb,var(--accent) 16%,transparent);border:3px dashed var(--accent);
+#drop{position:fixed;inset:0;background:rgba(31,111,235,.16);background:color-mix(in srgb,var(--accent) 16%,transparent);border:3px dashed var(--accent);
   display:none;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:var(--accent);z-index:50;pointer-events:none}
 #drop.show{display:flex}
 #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:9px 16px;border-radius:8px;
