@@ -182,7 +182,7 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
   .layout{grid-template-columns:minmax(0,1fr)!important}
   aside{position:fixed;top:47px;bottom:0;left:0;width:84vw;max-width:320px;z-index:40;transform:translateX(-100%);transition:transform .2s;visibility:visible!important;box-shadow:0 0 30px rgba(0,0,0,.25)}
   body.sbopen aside{transform:none}
-  .hide-sm{display:none}
+  .hide-sm{display:none!important}
   article{padding:20px 16px 80px}
   #edText{padding:16px 14px 60px}
 }
@@ -195,12 +195,81 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
   article{max-width:none;padding:0;display:block!important}
   details.fm{display:none}
 }
+
+/* ===== visual v2 ===== */
+.show-sm{display:none}
+:root{--radius:12px;--shadow:0 1px 2px rgba(15,23,42,.06),0 6px 18px rgba(15,23,42,.06);--grad:linear-gradient(135deg,#1f6feb,#6e8bff);--chip:#eef3fe}
+:root[data-theme="dark"]{--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);--chip:#1b2a44}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);--chip:#1b2a44}}
+header{gap:8px;padding:9px 14px;background:var(--bg);border-bottom:0;box-shadow:0 1px 0 var(--line);position:relative;z-index:5}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;white-space:nowrap;cursor:pointer;border:0;background:none;padding:2px 6px 2px 2px;border-radius:10px}
+.brand:hover{background:var(--active)}
+.brand svg{width:28px;height:28px;flex:none}
+.btn{border-radius:9px;padding:6px 11px;transition:border-color .15s,background .15s,box-shadow .15s}
+.btn:hover{box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.primary{background:var(--grad);border-color:transparent;color:#fff}
+#docpath{display:flex;align-items:center;gap:6px}
+#docpath .chip{display:inline-flex;align-items:center;gap:5px;background:var(--chip);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:12.5px;font-weight:600;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#docpath .meta{color:var(--muted);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+aside{background:var(--panel)}
+.sbhead{padding:12px;border-bottom:0;background:var(--panel)}
+#filter{border-radius:10px;padding:8px 11px;background:var(--bg)}
+.sb-sec{padding:2px 6px 4px}
+.sb-sec h5{display:flex;align-items:center;justify-content:space-between;margin:10px 8px 6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sb-sec h5 button{border:0;background:none;color:var(--muted);font-size:11px;cursor:pointer;padding:2px 6px;border-radius:6px;text-transform:none;letter-spacing:0}
+.sb-sec h5 button:hover{color:var(--c-red);background:var(--active)}
+.rlist{list-style:none;margin:0;padding:0}
+.rec{position:relative;display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;border:0;background:none;padding:8px 30px 8px 8px;border-radius:10px;cursor:pointer;color:inherit}
+.rec:hover{background:var(--active)}
+.rec.cur{background:var(--active);box-shadow:inset 3px 0 0 var(--accent)}
+.rec .ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--chip);color:var(--accent);flex:none;font-size:15px}
+.rec .tx{min-width:0;flex:1}
+.rec .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec .loc{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec .tm{font-size:11px;color:var(--muted);margin-top:1px}
+.rec .ed{display:inline-block;background:rgba(154,103,0,.14);color:var(--c-amber);border-radius:999px;padding:0 7px;font-size:10.5px;font-weight:700;margin-right:4px}
+.rec .x{position:absolute;right:6px;top:8px;border:0;background:none;color:var(--muted);cursor:pointer;opacity:0;border-radius:6px;padding:0 6px;font-size:14px;line-height:22px}
+.rec:hover .x,.rec:focus-within .x{opacity:1}
+.rec .x:hover{color:var(--c-red);background:var(--bg)}
+.empty{color:var(--muted);font-size:12.5px;padding:4px 10px 8px}
+#list{padding:2px 8px 30px}
+#list .file{border-radius:8px;padding:6px 10px}
+#list .file::before{content:"📄";margin-right:7px;font-size:12px;opacity:.75}
+#list .file.active{background:var(--active);box-shadow:inset 3px 0 0 var(--accent)}
+#count{margin-top:8px}
+article{max-width:800px}
+article h1{border-bottom:0;padding-bottom:.15em;background:linear-gradient(var(--accent),var(--accent)) left bottom/56px 3px no-repeat}
+article h2{border-bottom:1px solid var(--line)}
+article blockquote{border-left-color:var(--accent);background:var(--active);border-radius:0 10px 10px 0;color:var(--text);padding:.5em 1em}
+article pre{border-radius:var(--radius)}
+article table{border-radius:var(--radius);overflow:hidden}
+/* boas-vindas */
+.welcome{max-width:760px;margin:5vh auto 0;font-size:15px}
+.hero{display:flex;align-items:center;gap:18px;background:var(--grad);color:#fff;border-radius:20px;padding:24px 26px;box-shadow:var(--shadow)}
+.hero svg{width:64px;height:64px;flex:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.18))}
+.hero svg rect{fill:rgba(255,255,255,.18)}
+.hero h1{margin:0;font-size:1.9em;border:0;background:none;color:#fff;padding:0}
+.hero p{margin:.3em 0 0;opacity:.92}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0 6px}
+.card{display:flex;flex-direction:column;gap:4px;text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:16px;padding:16px 18px;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s,border-color .15s;color:inherit}
+.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.card .ci{font-size:24px}
+.card b{font-size:16px}
+.card small{color:var(--muted)}
+.wsec{margin:24px 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.rgrid .rec{border:1px solid var(--line);background:var(--bg);box-shadow:var(--shadow);padding:10px 30px 10px 10px}
+.tips{margin-top:22px;border:1px solid var(--line);border-radius:14px;padding:10px 16px;background:var(--bg)}
+.tips summary{cursor:pointer;font-weight:600}
+.note{color:var(--muted);font-size:12.5px;margin-top:14px}
+@media (max-width:820px){aside{top:52px}header{overflow-x:auto;scrollbar-width:none}header::-webkit-scrollbar{display:none}header>*{flex-shrink:0}.show-sm{display:inline!important}#docpath{display:none}.cards{grid-template-columns:1fr}.hero{padding:18px}.hero svg{width:48px;height:48px}}
 </style>
 </head>
 <body>
 <header>
+  <button class="brand" id="bHome" title="Início"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="url(#mdg)"/><defs><linearGradient id="mdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f6feb"/><stop offset="1" stop-color="#6e8bff"/></linearGradient></defs><path d="M13 44V20h6l7 9 7-9h6v24h-6V30l-7 9-7-9v14z" fill="#fff"/><path d="M47 20h5v14h5l-7.5 10L42 34h5z" fill="#fff"/></svg><span class="hide-sm">Markdown.md</span></button>
   <button class="btn icon" id="bSide" title="Mostrar/ocultar lista (Ctrl+B)">☰</button>
-  <button class="btn primary" id="bFolder" title="Abrir pasta (Ctrl+Shift+O)">Abrir pasta</button>
+  <button class="btn primary" id="bFolder" title="Abrir pasta (Ctrl+Shift+O)" aria-label="Abrir pasta"><span class="show-sm">📁</span><span class="hide-sm">Abrir pasta</span></button>
   <button class="btn hide-sm" id="bFiles" title="Abrir arquivos (Ctrl+O)">Abrir arquivos</button>
   <div id="docpath"></div>
   <button class="btn" id="bEdit" title="Editar este arquivo (Ctrl+E)" hidden>✎ Editar</button>
@@ -209,8 +278,8 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
   <button class="btn icon" id="bSmaller" title="Diminuir fonte">A−</button>
   <button class="btn icon" id="bBigger" title="Aumentar fonte">A+</button>
   <button class="btn icon hide-sm" id="bFont" title="Alternar fonte serifada / sem serifa">Aa</button>
-  <button class="btn icon" id="bTheme" title="Tema claro/escuro">◐</button>
-  <button class="btn icon hide-sm" id="bPrint" title="Imprimir / salvar PDF (Ctrl+P)">⎙</button>
+  <button class="btn icon" id="bTheme" title="Tema claro/escuro" aria-label="Tema claro/escuro"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></button>
+  <button class="btn icon hide-sm" id="bPrint" title="Imprimir / salvar PDF (Ctrl+P)" aria-label="Imprimir"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg></button>
   <a class="btn hide-sm" id="bDownload" href="markdown-md.html" download="Markdown.md.html" title="Baixar como um único ficheiro HTML: abre direto no navegador, sem instalar">⬇ Baixar HTML</a>
   <button class="btn primary" id="bInstall" title="Instalar como app: abre arquivos .md com duplo clique" hidden>⤓ Instalar</button>
 </header>
@@ -221,6 +290,13 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
       <input id="filter" type="search" placeholder="Filtrar arquivos… (Ctrl+K)" autocomplete="off">
       <div id="count">Nenhum arquivo aberto</div>
     </div>
+    <section class="sb-sec" id="recentSec">
+      <h5>Recentes <button id="rClear" title="Esquecer todos os recentes">limpar</button></h5>
+      <ul class="rlist" id="recent"></ul>
+    </section>
+    <section class="sb-sec" id="listSec">
+      <h5 id="listTitle">Nesta pasta</h5>
+    </section>
     <ul id="list"></ul>
   </aside>
   <main id="content">
@@ -256,6 +332,7 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
 <script>
 "use strict";
 const $ = s => document.querySelector(s);
+const LOGO = `<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="url(#mdg)"/><defs><linearGradient id="mdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f6feb"/><stop offset="1" stop-color="#6e8bff"/></linearGradient></defs><path d="M13 44V20h6l7 9 7-9h6v24h-6V30l-7 9-7-9v14z" fill="#fff"/><path d="M47 20h5v14h5l-7.5 10L42 34h5z" fill="#fff"/></svg>`;
 const state = { files:new Map(), assets:new Map(), urls:new Map(), current:null, lastMod:0, rootName:'', rootHandle:null, noFSA:false,
                 editing:false, editOrig:'', editCRLF:false, editBaseMod:0 };
 const MD_EXT  = /\.(md|markdown|mdown|mkd|txt)$/i;
@@ -431,6 +508,7 @@ function renderList(){
     b.onclick=async()=>{ if(!(await leaveEdit())) return; openPath(p); if(narrow()) document.body.classList.remove('sbopen'); };
     li.append(b); ul.append(li); shown++;
   }
+  $('#listTitle').textContent = state.rootName ? 'Nesta pasta · '+state.rootName : (state.files.size ? 'Arquivos abertos' : 'Nesta pasta');
   $('#count').textContent = state.files.size
     ? (q ? `${shown} de ${state.files.size} arquivo(s)` : `${state.files.size} arquivo(s)${state.rootName?' em '+state.rootName:''}`)
     : 'Nenhum arquivo aberto';
@@ -457,10 +535,11 @@ async function openPath(p, keepScroll=false){
   await renderMarkdown(text, p);
   const words=(text.match(/[\p{L}\p{N}]+/gu)||[]).length;
   document.title = base(p).replace(MD_EXT,'')+' — Markdown.md';
-  $('#docpath').innerHTML = `${esc(state.rootName?state.rootName+' › ':'')}${esc(dirOf(p)?dirOf(p).replace(/\//g,' › ')+' › ':'')}<b>${esc(base(p))}</b> · ${words.toLocaleString('pt-BR')} palavras · ~${Math.max(1,Math.round(words/200))} min`;
+  $('#docpath').innerHTML = `${state.rootName||dirOf(p)?`<span class="chip" title="${esc((state.rootName?state.rootName+'/':'')+dirOf(p))}">📁 ${esc([state.rootName,dirOf(p).replace(/\//g,' › ')].filter(Boolean).join(' › '))}</span>`:''}<b>${esc(base(p))}</b><span class="meta">· ${words.toLocaleString('pt-BR')} palavras · ~${Math.max(1,Math.round(words/200))} min</span>`;
   $('#bEdit').hidden=false;
   main.style.scrollBehavior='auto'; main.scrollTop = keepScroll ? y : 0; main.style.scrollBehavior='';
   renderList(); spy();
+  if(!keepScroll) remember(p,false);
 }
 
 function preprocess(src){
@@ -734,7 +813,7 @@ async function saveEdit(){
       const w=await src.handle.createWritable(); await w.write(out); await w.close();
       const f=await src.handle.getFile();
       state.editBaseMod=f.lastModified; state.lastMod=f.lastModified; state.editOrig=value;
-      edStatus(); toast('Guardado ✓ '+base(p));
+      edStatus(); toast('Guardado ✓ '+base(p)); remember(p,true);
       return true;
     }catch(e){ console.warn(e); toast('Não consegui gravar: '+(e.message||e.name)); return false; }
   }
@@ -804,27 +883,118 @@ document.addEventListener('keydown', e=>{
 });
 
 /* ---------- tela inicial ---------- */
-$('#article').innerHTML = `
+function renderWelcome(){
+  $('#article').innerHTML = `
 <div class="welcome">
-  <h1>Markdown.md</h1>
-  <p class="lead">Leitor e editor de arquivos Markdown, direto no seu computador. O conteúdo dos arquivos nunca sai do navegador.</p>
-  <div class="actions">
-    <button class="btn primary" id="wFolder">📁 Abrir pasta</button>
-    <button class="btn" id="wFiles">📄 Abrir arquivos</button>
+  <div class="hero">${LOGO}<div><h1>Markdown.md</h1><p>Leitor e editor de Markdown no seu computador. O conteúdo dos arquivos nunca sai do navegador.</p></div></div>
+  <div class="cards">
+    <button class="card" id="wFolder"><span class="ci">📁</span><b>Abrir pasta</b><small>Todos os .md de uma pasta — ex.: Zikaron, projetos</small></button>
+    <button class="card" id="wFiles"><span class="ci">📄</span><b>Abrir arquivos</b><small>Um ou vários .md avulsos</small></button>
   </div>
-  <p>Também pode <b>arrastar e soltar</b> arquivos ou uma pasta inteira nesta janela.</p>
+  <h3 class="wsec">Recentes</h3>
+  <div class="rgrid" id="wRecent"></div>
+  <details class="tips"><summary>Recursos e atalhos</summary>
   <ul>
-    <li>Tabelas, listas de tarefas, notas de rodapé e realce de código</li>
+    <li>Arraste e solte arquivos ou uma pasta inteira nesta janela</li>
+    <li>Tabelas, listas de tarefas, notas de rodapé, realce de código, fórmulas KaTeX e diagramas Mermaid</li>
     <li>Links <code>[[wiki]]</code>, imagens <code>![[embed]]</code>, callouts e propriedades do Obsidian</li>
-    <li>Fórmulas KaTeX (<code>$…$</code>) e diagramas Mermaid</li>
-    <li><b>✎ Editar</b> e guardar no próprio arquivo (Chrome/Edge, abrindo pelos botões)</li>
-    <li>Atualiza sozinho quando o arquivo é salvo por outro programa (Chrome/Edge)</li>
-    <li><b>⤓ Instalar</b> como app (Chrome/Edge): depois, no Explorer, <i>Abrir com → Markdown.md</i> abre o arquivo nesta mesma janela</li>
+    <li><b>✎ Editar</b> e guardar no próprio arquivo; atualiza sozinho quando outro programa o salva (Chrome/Edge)</li>
+    <li><b>⬇ Baixar HTML</b>: um único ficheiro que abre com duplo clique, sem internet</li>
     <li>Atalhos: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> pasta · <kbd>Ctrl</kbd>+<kbd>O</kbd> arquivos · <kbd>Ctrl</kbd>+<kbd>K</kbd> filtrar · <kbd>Ctrl</kbd>+<kbd>B</kbd> lista · <kbd>Ctrl</kbd>+<kbd>E</kbd> editar · <kbd>Ctrl</kbd>+<kbd>S</kbd> guardar · <kbd>Ctrl</kbd>+<kbd>P</kbd> PDF</li>
-  </ul>
+  </ul></details>
+  <p class="note">Os recentes ficam guardados só neste navegador, neste computador. Por segurança, o navegador mostra o nome da pasta e o caminho dentro dela, mas não o caminho completo do disco (C:\\…). Para reabrir com um clique é preciso o Chrome ou o Edge.</p>
 </div>`;
-$('#wFolder').onclick=openFolder;
-$('#wFiles').onclick=openFiles;
+  $('#wFolder').onclick=openFolder;
+  $('#wFiles').onclick=openFiles;
+  renderRecents();
+}
+async function goHome(){
+  if(!(await leaveEdit())) return;
+  state.current=null; $('#docpath').innerHTML=''; $('#bEdit').hidden=true; $('#toc').hidden=true;
+  document.title='Markdown.md'; renderWelcome(); renderList();
+}
+$('#bHome').onclick=goHome;
+
+/* ---------- recentes (IndexedDB; guarda o acesso para reabrir com 1 clique no Chrome/Edge) ---------- */
+// Recentes: metadados em "recent"; handles do disco à parte em "handles", lidos só ao reabrir.
+const RDB = {
+  db:null,
+  open(){ if(this.db) return Promise.resolve(this.db); return new Promise((res,rej)=>{ let r; try{ r=indexedDB.open('markdownmd',1); }catch(e){ return rej(e); }
+    r.onupgradeneeded=()=>{ r.result.createObjectStore('recent',{keyPath:'id'}); r.result.createObjectStore('handles'); };
+    r.onsuccess=()=>{ this.db=r.result; res(this.db); }; r.onerror=()=>rej(r.error); }); },
+  tx(store, mode, fn){ return this.open().then(db=>new Promise((res,rej)=>{ const t=db.transaction(store,mode); const out=fn(t.objectStore(store)); t.oncomplete=()=>res(out&&out.result); t.onerror=()=>rej(t.error); t.onabort=()=>rej(t.error); })); },
+  async all(){ try{ return (await this.tx('recent','readonly', st=>st.getAll()))||[]; }catch{ return []; } },
+  async put(rec, hs){ try{ await this.tx('recent','readwrite', st=>st.put(rec)); }catch(e){ console.warn('recentes:', e); return; }
+    if(hs) try{ await this.tx('handles','readwrite', st=>st.put(hs, rec.id)); }catch(e){ console.warn('recentes (handles):', e); } },
+  async handles(id){ try{ return await this.tx('handles','readonly', st=>st.get(id)); }catch{ return null; } },
+  async del(id){ try{ await this.tx('recent','readwrite', st=>st.delete(id)); await this.tx('handles','readwrite', st=>st.delete(id)); }catch{} },
+  async clear(){ try{ await this.tx('recent','readwrite', st=>st.clear()); await this.tx('handles','readwrite', st=>st.clear()); }catch{} }
+};
+const MAX_REC=20;
+const recId = p => (state.rootName ? 'pasta:'+state.rootName+'/' : 'arq:')+p;
+async function remember(p, edited){
+  const src=state.files.get(p); if(!src) return;
+  const id=recId(p), list=await RDB.all(), old=list.find(r=>r.id===id)||{};
+  const hs = (state.rootHandle||src.handle) ? { rootHandle:state.rootHandle||null, fileHandle:src.handle||null } : null;
+  await RDB.put({ id, name:base(p), path:p, folder:state.rootName||'', reopen: !!hs || !!old.reopen,
+    opened:Date.now(), edited: edited ? Date.now() : (old.edited||null) }, hs);
+  const all=(await RDB.all()).sort((a,b)=>b.opened-a.opened);
+  for(const r of all.slice(MAX_REC)) await RDB.del(r.id);
+  renderRecents();
+}
+function ago(t){
+  if(!t) return ''; const s=(Date.now()-t)/1000;
+  if(s<60) return 'agora'; if(s<3600) return `há ${Math.floor(s/60)} min`; if(s<86400) return `há ${Math.floor(s/3600)} h`;
+  const d=Math.floor(s/86400); if(d===1) return 'ontem'; if(d<7) return `há ${d} dias`;
+  return new Date(t).toLocaleDateString('pt-BR');
+}
+function recItem(r){
+  const loc=[r.folder||'arquivo avulso', dirOf(r.path).replace(/\//g,' › ')].filter(Boolean).join(' › ');
+  const when = r.edited && r.edited>=r.opened-1000 ? `<span class="ed">editado</span>${ago(r.edited)}` : (r.edited ? `aberto ${ago(r.opened)} · <span class="ed">editado</span>${ago(r.edited)}` : `aberto ${ago(r.opened)}`);
+  const cur = state.current && recId(state.current)===r.id ? ' cur' : '';
+  return `<li><div class="rec${cur}" role="button" tabindex="0" data-id="${esc(r.id)}" title="${esc(loc+' › '+r.name)}">
+    <span class="ic">${r.reopen?'📄':'🗒️'}</span>
+    <span class="tx"><div class="nm">${esc(r.name.replace(MD_EXT,''))}</div><div class="loc">📁 ${esc(loc)}</div><div class="tm">${when}</div></span>
+    <button class="x" data-del="${esc(r.id)}" title="Remover dos recentes" aria-label="Remover">×</button></div></li>`;
+}
+async function renderRecents(){
+  const list=(await RDB.all()).sort((a,b)=>Math.max(b.opened,b.edited||0)-Math.max(a.opened,a.edited||0));
+  const side=$('#recent'), wel=$('#wRecent');
+  side.innerHTML = list.length ? list.slice(0,8).map(recItem).join('') : '<div class="empty">Os arquivos que abrir aparecem aqui.</div>';
+  $('#rClear').hidden=!list.length;
+  if(wel) wel.innerHTML = list.length ? list.slice(0,12).map(r=>recItem(r).replace(/^<li>|<\/li>$/g,'')).join('') : '<div class="empty">Ainda não há recentes. Abra uma pasta ou um arquivo para começar.</div>';
+}
+async function ensurePerm(h, mode){
+  if(!h) return false; if(!h.queryPermission) return true;
+  let st=await h.queryPermission({mode}); if(st!=='granted' && h.requestPermission) st=await h.requestPermission({mode});
+  return st==='granted';
+}
+async function reopen(id){
+  if(!(await leaveEdit())) return;
+  const r=(await RDB.all()).find(x=>x.id===id); if(!r) return;
+  const h=r.reopen ? (await RDB.handles(id))||{} : {};
+  if(h.rootHandle) r.rootHandle=h.rootHandle; if(h.fileHandle) r.fileHandle=h.fileHandle;
+  try{
+    if(r.rootHandle && await ensurePerm(r.rootHandle,'read')){
+      resetLib(r.rootHandle.name, r.rootHandle); await walkHandle(r.rootHandle,'');
+      if(!state.files.has(norm(r.path))) toast(`"${r.name}" já não está em ${r.folder} (movido ou apagado).`);
+      await afterLoad(r.path); return;
+    }
+    if(r.fileHandle && await ensurePerm(r.fileHandle,'read')){
+      const k=await addLoose(r.fileHandle.name,{handle:r.fileHandle}); await afterLoad(k); return;
+    }
+  }catch(e){ console.warn(e); }
+  toast(`Não consegui reabrir "${r.name}" diretamente. Use Abrir pasta ou Abrir arquivos.`);
+}
+document.addEventListener('click', async e=>{
+  const del=e.target.closest('[data-del]'); if(del){ e.stopPropagation(); await RDB.del(del.dataset.del); renderRecents(); return; }
+  const it=e.target.closest('.rec[data-id]'); if(it){ await reopen(it.dataset.id); if(narrow()) document.body.classList.remove('sbopen'); }
+});
+document.addEventListener('keydown', e=>{ const it=e.target.closest && e.target.closest('.rec[data-id]'); if(it && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); reopen(it.dataset.id); } });
+$('#rClear').onclick=async()=>{ if(confirm('Esquecer todos os arquivos recentes? (Os arquivos não são apagados.)')){ await RDB.clear(); renderRecents(); } };
+setInterval(()=>{ if(!document.hidden) renderRecents(); }, 60000);
+
+renderWelcome();
 if(!window.marked) toast('As bibliotecas de renderização não carregaram. Recarregue com internet uma vez.');
 
 /* ---------- app instalado: abrir .md pelo Windows (duplo clique / "Abrir com") ---------- */

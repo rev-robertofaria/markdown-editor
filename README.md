@@ -18,6 +18,7 @@ Para regenerar depois de mudar `index.html` ou `lib/`: `node build-standalone.mj
 
 ## Recursos
 - Abrir pasta inteira (ex.: vault "Zikaron" do Obsidian) ou arquivos soltos; arrastar e soltar
+- **Recentes**: últimos 20 arquivos abertos ou guardados, com a pasta onde estão e quando foram abertos/editados; reabrir com um clique no Chrome/Edge. Ficam só neste navegador; o caminho completo do disco não é visível para páginas web, só o nome da pasta e o caminho dentro dela
 - Tabelas, tarefas, notas de rodapé, realce de código, KaTeX, Mermaid
 - `[[wikilinks]]`, `![[embeds]]`, callouts e front matter do Obsidian
 - Editar e guardar no arquivo original (Chrome/Edge — File System Access API)
