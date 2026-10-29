@@ -197,6 +197,7 @@ details.fm td:first-child{color:var(--muted);white-space:nowrap;width:1%}
 }
 
 /* ===== visual v2 ===== */
+.locbtn{border:0;background:var(--chip);color:var(--accent);border-radius:999px;padding:1px 8px;font:inherit;font-size:11px;font-weight:600;cursor:pointer;margin:3px 0 1px}.locbtn:hover{filter:brightness(.95)}
 header .btn{height:34px;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}
 header .btn.icon{width:38px;padding:0}
 .show-sm{display:none}
@@ -378,7 +379,7 @@ async function addLoose(name, src){
   let key=norm(name), n=1;
   const stem=key.replace(MD_EXT,''), ext=(key.match(MD_EXT)||[''])[0];
   while(state.files.has(key) && !(await sameSource(state.files.get(key), src))) key=`${stem} (${++n})${ext}`;
-  addEntry(key, src);
+  src.loose=true; addEntry(key, src);
   return key;
 }
 async function getFile(src){ return src.handle ? await src.handle.getFile() : src.file; }
@@ -420,7 +421,7 @@ async function openFolder(){
   if(window.showDirectoryPicker && !state.noFSA){
     try{
       const dir = await showDirectoryPicker({mode:'read'});
-      resetLib(dir.name, dir); await walkHandle(dir,''); await afterLoad();
+      resetLib(dir.name, dir); await walkHandle(dir,''); await afterLoad(); registerFolder(dir);
     }catch(e){
       if(e.name==='AbortError') return;
       console.warn(e); state.noFSA=true;
@@ -478,6 +479,7 @@ document.addEventListener('drop', async e=>{
     if(hs.length!==hp.length) throw 0;
     const dirs=hs.filter(h=>h.kind==='directory');
     if(dirs.length) resetLib(dirs.length===1 ? dirs[0].name : 'Várias pastas', dirs.length===1 ? dirs[0] : null);
+    dirs.forEach(registerFolder);
     for(const h of hs){
       if(h.kind==='directory') await walkHandle(h, dirs.length>1 ? h.name+'/' : '');
       else { const k=await addLoose(h.name,{handle:h}); first=first||k; }
@@ -499,12 +501,15 @@ document.addEventListener('drop', async e=>{
 function renderList(){
   const q=fold($('#filter').value.trim());
   const ul=$('#list'); ul.innerHTML='';
-  const paths=[...state.files.keys()].sort(sortPaths);
+  // com uma pasta aberta, os arquivos soltos (arrastados / abertos à parte) ficam num grupo próprio, no topo
+  const all=[...state.files.keys()].sort(sortPaths), isLoose=p=>!!state.rootName && !!(state.files.get(p)||{}).loose;
+  const paths=[...all.filter(isLoose), ...all.filter(p=>!isLoose(p))];
   let shown=0, lastDir=null;
   for(const p of paths){
     if(q && !fold(p).includes(q)) continue;
-    const d=dirOf(p);
-    if(d!==lastDir){ lastDir=d; if(d){ const li=document.createElement('li'); li.className='dir'; li.textContent=d.replace(/\//g,' › '); li.title=d; ul.append(li); } }
+    const lo=isLoose(p), d=lo ? '\u0000soltos' : dirOf(p);
+    if(d!==lastDir){ lastDir=d; if(lo || d){ const li=document.createElement('li'); li.className='dir';
+      li.textContent = lo ? 'Soltos (fora de '+state.rootName+')' : d.replace(/\//g,' › '); li.title = lo ? 'Arrastados ou abertos à parte' : d; ul.append(li); } }
     const li=document.createElement('li'); const b=document.createElement('button');
     b.className='file'+(p===state.current?' active':''); b.textContent=base(p).replace(MD_EXT,''); b.title=p;
     b.onclick=async()=>{ if(!(await leaveEdit())) return; openPath(p); if(narrow()) document.body.classList.remove('sbopen'); };
@@ -537,7 +542,9 @@ async function openPath(p, keepScroll=false){
   await renderMarkdown(text, p);
   const words=(text.match(/[\p{L}\p{N}]+/gu)||[]).length;
   document.title = base(p).replace(MD_EXT,'')+' — Markdown.md';
-  $('#docpath').innerHTML = `${state.rootName||dirOf(p)?`<span class="chip" title="${esc((state.rootName?state.rootName+'/':'')+dirOf(p))}">📁 ${esc([state.rootName,dirOf(p).replace(/\//g,' › ')].filter(Boolean).join(' › '))}</span>`:''}<b>${esc(base(p))}</b><span class="meta">· ${words.toLocaleString('pt-BR')} palavras · ~${Math.max(1,Math.round(words/200))} min</span>`;
+  { const src0=state.files.get(p)||{}, lc=src0.loose ? src0.loc : {folder:state.rootName, path:p};
+    const where=lc ? [lc.folder, dirOf(lc.path).replace(/\//g,' › ')].filter(Boolean).join(' › ') : '';
+    $('#docpath').innerHTML = `${where?`<span class="chip" title="${esc(where)}">📁 ${esc(where)}</span>`:''}<b>${esc(base(p))}</b><span class="meta">· ${words.toLocaleString('pt-BR')} palavras · ~${Math.max(1,Math.round(words/200))} min</span>`; }
   $('#bEdit').hidden=false;
   main.style.scrollBehavior='auto'; main.scrollTop = keepScroll ? y : 0; main.style.scrollBehavior='';
   renderList(); spy();
@@ -613,6 +620,9 @@ async function renderMarkdown(src, path){
   const {text, math, notes}=preprocess(src);
   let html=marked.parse(text,{gfm:true, breaks:false});
   if(notes.length) html+=`<section class="footnotes"><hr><ol>${notes.map(n=>`<li id="fn-${esc(n.k)}">${marked.parseInline(n.t)} <a href="#fnref-${esc(n.k)}" class="fnback">↩</a></li>`).join('')}</ol></section>`;
+  // imagens locais: tira o src antes de entrar na página, para o navegador não pedir o arquivo ao site (404)
+  if(!state.imgHook){ state.imgHook=true; DOMPurify.addHook('afterSanitizeAttributes', n=>{
+    if(n.tagName==='IMG'){ const s=n.getAttribute('src')||''; if(s && !/^(https?:|data:|blob:)/i.test(s)){ n.setAttribute('data-lsrc',s); n.removeAttribute('src'); } } }); }
   html=DOMPurify.sanitize(html,{ADD_ATTR:['target']});
   html=html.replace(/@@KTX(\d+)@@/g,(_,i)=>renderTex(math[+i]));
   art.innerHTML=fm+html;
@@ -708,8 +718,9 @@ async function enhance(art, path){
 
   // imagens locais
   for(const img of [...art.querySelectorAll('img')]){
-    const s=img.getAttribute('src')||'';
+    const s=img.getAttribute('data-lsrc')||img.getAttribute('src')||'';
     if(/^(https?:|data:|blob:)/i.test(s)){ img.loading='lazy'; continue; }
+    if(!s) continue;
     const dec=safeDecode(s.split(/[?#]/)[0]);
     let key=norm(dirOf(path)+'/'+dec), src=state.assets.get(key);
     if(!src){ const b=base(dec).toLowerCase(); for(const [k,v] of state.assets){ if(base(k).toLowerCase()===b){ key=k; src=v; break; } } }
@@ -904,7 +915,7 @@ function renderWelcome(){
     <li><b>⬇ Baixar HTML</b>: um único ficheiro que abre com duplo clique, sem internet</li>
     <li>Atalhos: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> pasta · <kbd>Ctrl</kbd>+<kbd>O</kbd> arquivos · <kbd>Ctrl</kbd>+<kbd>K</kbd> filtrar · <kbd>Ctrl</kbd>+<kbd>B</kbd> lista · <kbd>Ctrl</kbd>+<kbd>E</kbd> editar · <kbd>Ctrl</kbd>+<kbd>S</kbd> guardar · <kbd>Ctrl</kbd>+<kbd>P</kbd> PDF</li>
   </ul></details>
-  <p class="note">Os recentes ficam guardados só neste navegador, neste computador. Por segurança, o navegador mostra o nome da pasta e o caminho dentro dela, mas não o caminho completo do disco (C:\\…). Para reabrir com um clique é preciso o Chrome ou o Edge.</p>
+  <p class="note">Os recentes ficam guardados só neste navegador, neste computador. Por segurança, o navegador mostra o nome da pasta e o caminho dentro dela, mas não o caminho completo do disco (C:\\…). Arquivo arrastado ou aberto sozinho: o navegador não diz de que pasta veio; se estiver numa pasta que já abriu aqui, o local aparece sozinho; senão, use <b>📍 indicar pasta</b> uma vez. Para reabrir com um clique é preciso o Chrome ou o Edge.</p>
 </div>`;
   $('#wFolder').onclick=openFolder;
   $('#wFiles').onclick=openFiles;
@@ -921,27 +932,88 @@ $('#bHome').onclick=goHome;
 // Recentes: metadados em "recent"; handles do disco à parte em "handles", lidos só ao reabrir.
 const RDB = {
   db:null,
-  open(){ if(this.db) return Promise.resolve(this.db); return new Promise((res,rej)=>{ let r; try{ r=indexedDB.open('markdownmd',1); }catch(e){ return rej(e); }
-    r.onupgradeneeded=()=>{ r.result.createObjectStore('recent',{keyPath:'id'}); r.result.createObjectStore('handles'); };
+  open(){ if(this.db) return Promise.resolve(this.db); return new Promise((res,rej)=>{ let r; try{ r=indexedDB.open('markdownmd',2); }catch(e){ return rej(e); }
+    r.onupgradeneeded=()=>{ const db=r.result, has=n=>db.objectStoreNames.contains(n);
+      if(!has('recent')) db.createObjectStore('recent',{keyPath:'id'}); if(!has('handles')) db.createObjectStore('handles'); if(!has('folders')) db.createObjectStore('folders',{keyPath:'id'}); };
     r.onsuccess=()=>{ this.db=r.result; res(this.db); }; r.onerror=()=>rej(r.error); }); },
   tx(store, mode, fn){ return this.open().then(db=>new Promise((res,rej)=>{ const t=db.transaction(store,mode); const out=fn(t.objectStore(store)); t.oncomplete=()=>res(out&&out.result); t.onerror=()=>rej(t.error); t.onabort=()=>rej(t.error); })); },
   async all(){ try{ return (await this.tx('recent','readonly', st=>st.getAll()))||[]; }catch{ return []; } },
   async put(rec, hs){ try{ await this.tx('recent','readwrite', st=>st.put(rec)); }catch(e){ console.warn('recentes:', e); return; }
     if(hs) try{ await this.tx('handles','readwrite', st=>st.put(hs, rec.id)); }catch(e){ console.warn('recentes (handles):', e); } },
   async handles(id){ try{ return await this.tx('handles','readonly', st=>st.get(id)); }catch{ return null; } },
+  async folders(){ try{ return (await this.tx('folders','readonly', st=>st.getAll()))||[]; }catch{ return []; } },
+  async putFolder(f){ try{ await this.tx('folders','readwrite', st=>st.put(f)); }catch(e){ console.warn('pastas:', e); } },
+  async delFolder(id){ try{ await this.tx('folders','readwrite', st=>st.delete(id)); }catch{} },
   async del(id){ try{ await this.tx('recent','readwrite', st=>st.delete(id)); await this.tx('handles','readwrite', st=>st.delete(id)); }catch{} },
   async clear(){ try{ await this.tx('recent','readwrite', st=>st.clear()); await this.tx('handles','readwrite', st=>st.clear()); }catch{} }
 };
 const MAX_REC=20;
-const recId = p => (state.rootName ? 'pasta:'+state.rootName+'/' : 'arq:')+p;
+// Pastas conhecidas: cada pasta aberta fica registada; um arquivo solto (arrastado, "Abrir arquivos" ou "Abrir com")
+// que esteja dentro de uma delas mostra o local. O navegador nunca revela o caminho de um arquivo solto por si.
+const MAX_FOLDERS=30;
+async function registerFolder(dir){
+  if(!dir || dir.kind!=='directory') return;
+  const all=await RDB.folders();
+  for(const f of all){ try{ if(await f.handle.isSameEntry(dir)){ await RDB.putFolder({...f, added:Date.now()}); return; } }catch{} }
+  await RDB.putFolder({ id:'d'+Date.now().toString(36)+Math.random().toString(36).slice(2,6), name:dir.name, handle:dir, added:Date.now() });
+  const old=all.sort((a,b)=>b.added-a.added).slice(MAX_FOLDERS-1);
+  for(const f of old) await RDB.delFolder(f.id);
+}
+// procura o arquivo nas pastas conhecidas; fica com a mais externa (mostra mais do caminho)
+async function locate(fh){
+  if(!fh || fh.kind!=='file') return null;
+  const dirs=[...(state.rootHandle?[state.rootHandle]:[]), ...(await RDB.folders()).map(f=>f.handle)];
+  let best=null;
+  for(const d of dirs){
+    try{ const parts=await d.resolve(fh); if(parts && parts.length && (!best || parts.length>best.parts.length)) best={handle:d, parts}; }catch{}
+  }
+  return best && { folder:best.handle.name, path:norm(best.parts.join('/')), handle:best.handle };
+}
 async function remember(p, edited){
   const src=state.files.get(p); if(!src) return;
-  const id=recId(p), list=await RDB.all(), old=list.find(r=>r.id===id)||{};
-  const hs = (state.rootHandle||src.handle) ? { rootHandle:state.rootHandle||null, fileHandle:src.handle||null } : null;
-  await RDB.put({ id, name:base(p), path:p, folder:state.rootName||'', reopen: !!hs || !!old.reopen,
+  let folder=state.rootName||'', path=p, rootH=state.rootHandle||null, unknown=false;
+  if(src.loose){
+    const lc = src.loc || (src.handle ? await locate(src.handle) : null);
+    if(lc){ src.loc=lc; folder=lc.folder; path=lc.path; rootH=lc.handle; if(p===state.current) openPathChip(p); }
+    else { folder=''; path=base(p); rootH=null; unknown=!!src.handle; }
+  }
+  const id = folder ? 'pasta:'+folder+'/'+path : 'arq:'+p;
+  const list=await RDB.all(), old=list.find(r=>r.id===id)||{};
+  const hs = (rootH||src.handle) ? { rootHandle:rootH, fileHandle:src.handle||null } : null;
+  state.curRecId=id;
+  await RDB.put({ id, name:base(p), path, folder, unknown, reopen: !!hs || !!old.reopen,
     opened:Date.now(), edited: edited ? Date.now() : (old.edited||null) }, hs);
   const all=(await RDB.all()).sort((a,b)=>b.opened-a.opened);
   for(const r of all.slice(MAX_REC)) await RDB.del(r.id);
+  renderRecents();
+}
+function openPathChip(p){
+  const c=$('#docpath .chip'), lc=(state.files.get(p)||{}).loc; if(!lc) return;
+  const where=[lc.folder, dirOf(lc.path).replace(/\//g,' › ')].filter(Boolean).join(' › ');
+  const html=`<span class="chip" title="${esc(where)}">📁 ${esc(where)}</span>`;
+  if(c) c.outerHTML=html; else $('#docpath').insertAdjacentHTML('afterbegin', html);
+}
+// "indicar pasta": abre o seletor já na pasta do arquivo; essa pasta passa a ser conhecida
+async function locateRec(id){
+  if(!window.showDirectoryPicker) return;
+  const h=(await RDB.handles(id))||{}; const fh=h.fileHandle;
+  let dir; try{ dir=await showDirectoryPicker({mode:'read', ...(fh?{startIn:fh}:{})}); }catch(e){ return; }
+  await registerFolder(dir);
+  let found=0;
+  for(const r of (await RDB.all()).filter(r=>r.unknown || (!r.folder && r.reopen))){
+    const hh=(await RDB.handles(r.id))||{}; if(!hh.fileHandle) continue;
+    let parts=null; try{ parts=await dir.resolve(hh.fileHandle); }catch{}
+    if(!parts || !parts.length) continue;
+    const path=norm(parts.join('/')), nid='pasta:'+dir.name+'/'+path, ex=(await RDB.all()).find(x=>x.id===nid);
+    if(nid!==r.id) await RDB.del(r.id);
+    await RDB.put({...r, id:nid, folder:dir.name, path, unknown:false, opened:Math.max(r.opened, ex?ex.opened:0), edited:Math.max(r.edited||0, ex&&ex.edited||0)||null},
+                  {rootHandle:dir, fileHandle:hh.fileHandle});
+    if(state.curRecId===r.id) state.curRecId=nid;
+    for(const src of state.files.values()) if(src.loose && src.handle){ try{ if(await src.handle.isSameEntry(hh.fileHandle)) src.loc={folder:dir.name, path:norm(parts.join('/')), handle:dir}; }catch{} }
+    found++;
+  }
+  if(state.current) openPathChip(state.current);
+  toast(found ? `Local identificado: 📁 ${dir.name} (${found} arquivo${found>1?'s':''}).` : `Esse arquivo não está dentro de "${dir.name}". Escolha a pasta onde ele está.`);
   renderRecents();
 }
 function ago(t){
@@ -951,12 +1023,13 @@ function ago(t){
   return new Date(t).toLocaleDateString('pt-BR');
 }
 function recItem(r){
-  const loc=[r.folder||'arquivo avulso', dirOf(r.path).replace(/\//g,' › ')].filter(Boolean).join(' › ');
+  const unknown = r.unknown || (!r.folder && r.reopen);
+  const loc = r.folder ? [r.folder, dirOf(r.path).replace(/\//g,' › ')].filter(Boolean).join(' › ') : (unknown ? 'local por identificar' : 'arquivo avulso');
   const when = r.edited && r.edited>=r.opened-1000 ? `<span class="ed">editado</span>${ago(r.edited)}` : (r.edited ? `aberto ${ago(r.opened)} · <span class="ed">editado</span>${ago(r.edited)}` : `aberto ${ago(r.opened)}`);
-  const cur = state.current && recId(state.current)===r.id ? ' cur' : '';
+  const cur = state.current && state.curRecId===r.id ? ' cur' : '';
   return `<li><div class="rec${cur}" role="button" tabindex="0" data-id="${esc(r.id)}" title="${esc(loc+' › '+r.name)}">
     <span class="ic">${r.reopen?'📄':'🗒️'}</span>
-    <span class="tx"><div class="nm">${esc(r.name.replace(MD_EXT,''))}</div><div class="loc">📁 ${esc(loc)}</div><div class="tm">${when}</div></span>
+    <span class="tx"><div class="nm">${esc(r.name.replace(MD_EXT,''))}</div><div class="loc">📁 ${esc(loc)}</div>${unknown && window.showDirectoryPicker ? `<div><button class="locbtn" data-locate="${esc(r.id)}" title="Abre o seletor na pasta deste arquivo: clique em Selecionar pasta">📍 indicar pasta</button></div>`:''}<div class="tm">${when}</div></span>
     <button class="x" data-del="${esc(r.id)}" title="Remover dos recentes" aria-label="Remover">×</button></div></li>`;
 }
 async function renderRecents(){
@@ -978,7 +1051,7 @@ async function reopen(id){
   if(h.rootHandle) r.rootHandle=h.rootHandle; if(h.fileHandle) r.fileHandle=h.fileHandle;
   try{
     if(r.rootHandle && await ensurePerm(r.rootHandle,'read')){
-      resetLib(r.rootHandle.name, r.rootHandle); await walkHandle(r.rootHandle,'');
+      resetLib(r.rootHandle.name, r.rootHandle); await walkHandle(r.rootHandle,''); registerFolder(r.rootHandle);
       if(!state.files.has(norm(r.path))) toast(`"${r.name}" já não está em ${r.folder} (movido ou apagado).`);
       await afterLoad(r.path); return;
     }
@@ -989,10 +1062,11 @@ async function reopen(id){
   toast(`Não consegui reabrir "${r.name}" diretamente. Use Abrir pasta ou Abrir arquivos.`);
 }
 document.addEventListener('click', async e=>{
+  const lb=e.target.closest('[data-locate]'); if(lb){ e.stopPropagation(); await locateRec(lb.dataset.locate); return; }
   const del=e.target.closest('[data-del]'); if(del){ e.stopPropagation(); await RDB.del(del.dataset.del); renderRecents(); return; }
   const it=e.target.closest('.rec[data-id]'); if(it){ await reopen(it.dataset.id); if(narrow()) document.body.classList.remove('sbopen'); }
 });
-document.addEventListener('keydown', e=>{ const it=e.target.closest && e.target.closest('.rec[data-id]'); if(it && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); reopen(it.dataset.id); } });
+document.addEventListener('keydown', e=>{ if(e.target.closest && e.target.closest('[data-locate],[data-del]')) return; const it=e.target.closest && e.target.closest('.rec[data-id]'); if(it && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); reopen(it.dataset.id); } });
 $('#rClear').onclick=async()=>{ if(confirm('Esquecer todos os arquivos recentes? (Os arquivos não são apagados.)')){ await RDB.clear(); renderRecents(); } };
 setInterval(()=>{ if(!document.hidden) renderRecents(); }, 60000);
 
